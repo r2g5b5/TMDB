@@ -1,4 +1,4 @@
-package com.example.tmdb.ui.theme
+package com.example.tmdb.presentation.theme
 
 import android.app.Activity
 import android.os.Build
