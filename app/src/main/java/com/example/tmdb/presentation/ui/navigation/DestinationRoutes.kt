@@ -1,5 +1,6 @@
 package com.example.tmdb.presentation.ui.navigation
 
 enum class DestinationRoutes  {
-    MOVIES_LIST
+    MOVIES_LIST,
+    HOME_SCREEN
 }

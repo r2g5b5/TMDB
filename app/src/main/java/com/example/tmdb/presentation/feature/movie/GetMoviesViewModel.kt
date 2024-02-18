@@ -1,43 +1,76 @@
 package com.example.tmdb.presentation.feature.movie
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.tmdb.data.remote.retrofit.api_request.PageRequest
-import com.example.tmdb.data.remote.retrofit.response_handler.ResponseHandler
-import com.example.tmdb.domain.model.movie.Movie
-import com.example.tmdb.domain.use_case.movie.GetMoviesUseCase
-import com.example.tmdb.presentation.ui.state.UiState
+import com.example.tmdb.domain.repository.MovieRepository
+import com.example.tmdb.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class GetMoviesViewModel @Inject constructor(
-    private val useCase: GetMoviesUseCase,
+    private val movieRepository: MovieRepository,
 ) : ViewModel() {
 
-    private val job: Job? = null
-    private val _uiState = mutableStateOf(UiState<List<Movie>>())
-    val uiState: State<UiState<List<Movie>>> = _uiState
+    private var _movieListState = MutableStateFlow(MovieListState())
+    val movieListState = _movieListState.asStateFlow()
 
-    fun getMovies(filter: PageRequest) {
-        useCase(filter).onEach { result ->
-            when (result) {
-                is ResponseHandler.Success -> _uiState.value = UiState(success = result.data)
-                is ResponseHandler.Error -> _uiState.value = UiState(errors = result.errors)
-                is ResponseHandler.Loading -> _uiState.value = UiState(isLoading = true)
-            }
-        }.launchIn(viewModelScope)
+    init {
+        getUpcomingMovieList(false)
     }
 
-    override fun onCleared() {
-        job?.cancel()
-        super.onCleared()
+    fun onEvent(event: MovieListUiEvent) {
+        when (event) {
+            is MovieListUiEvent.Paginate -> {
+                getUpcomingMovieList(true)
+            }
+        }
+    }
+
+    private fun getUpcomingMovieList(forceFetchFromRemote: Boolean) {
+        viewModelScope.launch {
+            _movieListState.update {
+                it.copy(isLoading = true)
+            }
+
+            movieRepository.getMovieList(
+                forceFetchFromRemote,
+                movieListState.value.upcomingMovieListPage
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Error -> {
+                        _movieListState.update {
+                            it.copy(isLoading = false)
+                        }
+                    }
+
+                    is Resource.Success -> {
+                        result.data?.let { upcomingList ->
+                            _movieListState.update {
+                                it.copy(
+                                    upcomingMovieList = movieListState.value.upcomingMovieList
+                                            + upcomingList.shuffled(),
+                                    upcomingMovieListPage = movieListState.value.upcomingMovieListPage + 1
+                                )
+                            }
+                        }
+                    }
+
+                    is Resource.Loading -> {
+                        _movieListState.update {
+                            it.copy(isLoading = result.isLoading)
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }
