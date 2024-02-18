@@ -59,10 +59,10 @@ fun MovieItem(
                     .clip(RoundedCornerShape(22.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
+               /* Icon(
                     painterResource(id = R.drawable.image_not_s),
                     contentDescription = movie.title
-                )
+                )*/
             }
         }
 

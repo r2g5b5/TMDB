@@ -20,9 +20,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +33,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tmdb.R
 import com.example.tmdb.presentation.feature.movie.GetMoviesViewModel
@@ -46,11 +52,17 @@ fun MoviesScreen(
     val movieListState = listViewModel.movieListState.collectAsState().value
     val isConnected = isNetworkAvailable(LocalContext.current)
 
+    var showErrorScreen by remember { mutableStateOf(!isConnected) }
 
-    if (!isConnected) {
-        NoInternetConnectionScreen()
-    }else if (movieListState.upcomingMovieList.isEmpty()) {
-     LoadingScreen()
+
+    if (showErrorScreen) {
+        NoInternetConnectionScreen {
+            onEvent(MovieListUiEvent.Retry())
+            showErrorScreen = false
+        }
+
+    } else if (movieListState.upcomingMovieList.isEmpty() && movieListState.isLoading) {
+        LoadingScreen()
     } else {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
@@ -74,7 +86,7 @@ fun MoviesScreen(
 
 
 @Composable
-fun NoInternetConnectionScreen() {
+fun NoInternetConnectionScreen(onRetry: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -87,25 +99,33 @@ fun NoInternetConnectionScreen() {
         ) {
             Image(
                 modifier = Modifier
-                    .size(200.dp)
-                    .clip(CircleShape),
-                painter = painterResource(id = R.drawable.sad),
-                contentDescription = "No Internet",
-                contentScale = ContentScale.Crop
+                    .size(150.dp),
+                painter = painterResource(id = R.drawable.error),
+                contentDescription = "No Internet"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "No Internet Connection",
+                text = "Connection glitch",
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp
+            )
+            Text(
+                text = "Seems like there's an internet connection problem.",
+                textAlign = TextAlign.Center
             )
 
-            Button(onClick = { /*TODO*/ }) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = onRetry) {
+
+                Text(text = "Retry")
 
             }
         }
     }
 }
-
 
 
 @Composable

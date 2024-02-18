@@ -28,7 +28,8 @@ class GetMoviesViewModel @Inject constructor(
 
     fun onEvent(event: MovieListUiEvent) {
         when (event) {
-            is MovieListUiEvent.Paginate -> {
+            is MovieListUiEvent.Paginate,
+            is MovieListUiEvent.Retry -> {
                 getUpcomingMovieList(true)
             }
         }
