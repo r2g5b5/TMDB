@@ -47,7 +47,9 @@ fun MoviesScreen(
     val isConnected = isNetworkAvailable(LocalContext.current)
 
 
-  if (movieListState.upcomingMovieList.isEmpty()) {
+    if (!isConnected) {
+        NoInternetConnectionScreen()
+    }else if (movieListState.upcomingMovieList.isEmpty()) {
      LoadingScreen()
     } else {
         LazyVerticalGrid(
