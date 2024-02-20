@@ -50,7 +50,6 @@ fun MovieItem(
 
     Column(
         modifier = Modifier
-            .wrapContentHeight()
             .width(200.dp)
             .padding(8.dp)
             .clip(RoundedCornerShape(28.dp))

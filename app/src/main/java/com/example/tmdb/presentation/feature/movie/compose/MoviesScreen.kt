@@ -5,11 +5,14 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,7 +53,7 @@ fun MoviesScreen(
     movieListState: MovieListState,
     onEvent: (MovieListUiEvent) -> Unit,
 ) {
-    val context=LocalContext.current
+    val context = LocalContext.current
     val isConnected = isNetworkAvailable(context)
 
     var showErrorScreen by remember { mutableStateOf(!isConnected) }
@@ -69,7 +72,9 @@ fun MoviesScreen(
     } else {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 64.dp),
             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 4.dp)
         ) {
             items(movieListState.upcomingMovieList.size) { index ->
@@ -78,11 +83,40 @@ fun MoviesScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                    if (index >= movieListState.upcomingMovieList.size - 1 && !movieListState.isLoading) {
-                        onEvent(MovieListUiEvent.Paginate)
+                if (index >= movieListState.upcomingMovieList.size - 1 && !movieListState.isLoading) {
+                    onEvent(MovieListUiEvent.Paginate)
 
+                }
+            }
+        }
+
+        if (movieListState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+
+                if (!isNetworkAvailable(context)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 20.dp),
+                        contentAlignment = Alignment.BottomCenter
+                    ) {
+                        Row(modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        , verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "Something went Wrong", fontSize = 16.sp)
+                            Button(onClick = { onEvent(MovieListUiEvent.Retry) }) {
+                                Text(text = "Try again", color = Color.Red)
+                            }
+                        }
                     }
-
+                    return
+                }
+                CircularProgressIndicator()
             }
         }
     }
