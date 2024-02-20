@@ -41,16 +41,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.tmdb.R
 import com.example.tmdb.presentation.feature.movie.GetMoviesViewModel
+import com.example.tmdb.presentation.feature.movie.MovieListState
 import com.example.tmdb.presentation.feature.movie.MovieListUiEvent
 
 
 @Composable
 fun MoviesScreen(
-    listViewModel: GetMoviesViewModel = hiltViewModel(),
+    movieListState: MovieListState,
     onEvent: (MovieListUiEvent) -> Unit,
 ) {
     val context=LocalContext.current
-    val movieListState = listViewModel.movieListState.collectAsState().value
     val isConnected = isNetworkAvailable(context)
 
     var showErrorScreen by remember { mutableStateOf(!isConnected) }

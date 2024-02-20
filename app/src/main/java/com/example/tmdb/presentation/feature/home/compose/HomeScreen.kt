@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -31,6 +32,7 @@ import com.example.tmdb.presentation.ui.navigation.Destinations
 @Composable
 fun HomeScreen() {
     val movieListViewModel = hiltViewModel<GetMoviesViewModel>()
+    val movieListState = movieListViewModel.movieListState.collectAsState().value
     val navController = rememberNavController()
     Scaffold(topBar = {
         TopAppBar(
@@ -67,6 +69,7 @@ fun HomeScreen() {
             ) {
                 composable(Destinations.MoviesScreen.route) {
                     MoviesScreen(
+                        movieListState = movieListState,
                         onEvent = movieListViewModel::onEvent
                     )
                 }

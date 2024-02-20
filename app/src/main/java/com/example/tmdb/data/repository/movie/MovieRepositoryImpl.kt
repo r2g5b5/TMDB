@@ -18,6 +18,7 @@ class MovieRepositoryImpl @Inject constructor(
     private val api: MovieApi,
     private val movieDatabase: MovieDatabase,
 ) : MovieRepository {
+
     override suspend fun getMovieList(
         forceFetchFromRemote: Boolean,
         page: Int
