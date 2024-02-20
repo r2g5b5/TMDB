@@ -78,6 +78,7 @@ fun MoviesScreen(
             contentPadding = PaddingValues(vertical = 8.dp, horizontal = 4.dp)
         ) {
             items(movieListState.upcomingMovieList.size) { index ->
+
                 MovieItem(
                     movie = movieListState.upcomingMovieList[index],
                 )
@@ -85,38 +86,32 @@ fun MoviesScreen(
 
                 if (index >= movieListState.upcomingMovieList.size - 1 && !movieListState.isLoading) {
                     onEvent(MovieListUiEvent.Paginate)
-
                 }
             }
         }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.BottomCenter
+        ) {
 
-        if (movieListState.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-
-                if (!isNetworkAvailable(context)) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 20.dp),
-                        contentAlignment = Alignment.BottomCenter
-                    ) {
-                        Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        , verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "Something went Wrong", fontSize = 16.sp)
-                            Button(onClick = { onEvent(MovieListUiEvent.Retry) }) {
-                                Text(text = "Try again", color = Color.Red)
-                            }
-                        }
+            if (!isNetworkAvailable(context)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Something went Wrong", fontSize = 16.sp)
+                    Button(onClick = { onEvent(MovieListUiEvent.Retry) }) {
+                        Text(text = "Try again", color = Color.Red)
                     }
-                    return
                 }
-                CircularProgressIndicator()
+                return
+            }
+
+            if (movieListState.isLoading) {
+                CircularProgressIndicator(color = Color.Green)
             }
         }
     }
