@@ -57,7 +57,7 @@ class GetMoviesViewModel @Inject constructor(
                             _movieListState.update {
                                 it.copy(
                                     upcomingMovieList = movieListState.value.upcomingMovieList
-                                            + upcomingList.shuffled(),
+                                            + upcomingList,
                                     upcomingMovieListPage = movieListState.value.upcomingMovieListPage + 1
                                 )
                             }

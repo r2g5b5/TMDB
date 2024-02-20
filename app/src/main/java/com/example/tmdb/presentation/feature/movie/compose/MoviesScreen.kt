@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,18 +49,20 @@ fun MoviesScreen(
     listViewModel: GetMoviesViewModel = hiltViewModel(),
     onEvent: (MovieListUiEvent) -> Unit,
 ) {
-
+    val context=LocalContext.current
     val movieListState = listViewModel.movieListState.collectAsState().value
-    val isConnected = isNetworkAvailable(LocalContext.current)
+    val isConnected = isNetworkAvailable(context)
 
     var showErrorScreen by remember { mutableStateOf(!isConnected) }
 
 
     if (showErrorScreen) {
-        NoInternetConnectionScreen {
-            onEvent(MovieListUiEvent.Retry())
-            showErrorScreen = false
-        }
+        NoInternetConnectionScreen(onRetry = {
+            if (isNetworkAvailable(context)) {
+                showErrorScreen = false
+                onEvent(MovieListUiEvent.Retry)
+            }
+        })
 
     } else if (movieListState.upcomingMovieList.isEmpty() && movieListState.isLoading) {
         LoadingScreen()
@@ -75,9 +78,10 @@ fun MoviesScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (index >= movieListState.upcomingMovieList.size - 1 && !movieListState.isLoading) {
-                    onEvent(MovieListUiEvent.Paginate())
-                }
+                    if (index >= movieListState.upcomingMovieList.size - 1 && !movieListState.isLoading) {
+                        onEvent(MovieListUiEvent.Paginate)
+
+                    }
 
             }
         }

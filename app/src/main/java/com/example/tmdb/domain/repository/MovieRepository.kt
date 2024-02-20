@@ -10,4 +10,5 @@ interface MovieRepository {
         forceFetchFromRemote: Boolean,
         page: Int
     ): Flow<Resource<List<Movie>>>
+
 }

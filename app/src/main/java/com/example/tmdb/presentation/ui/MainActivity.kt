@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.tmdb.presentation.theme.TMDBTheme
 import com.example.tmdb.presentation.ui.navigation.Destinations
-import com.example.tmdb.presentation.ui.navigation.HomeScreen
+import com.example.tmdb.presentation.feature.home.compose.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

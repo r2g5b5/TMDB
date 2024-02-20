@@ -9,9 +9,9 @@ import com.example.tmdb.domain.repository.MovieRepository
 import com.example.tmdb.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okio.IOException
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
-
+import java.io.IOException
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
@@ -20,7 +20,7 @@ class MovieRepositoryImpl @Inject constructor(
 ) : MovieRepository {
     override suspend fun getMovieList(
         forceFetchFromRemote: Boolean,
-        page: Int,
+        page: Int
     ): Flow<Resource<List<Movie>>> {
         return flow {
 
@@ -40,7 +40,6 @@ class MovieRepositoryImpl @Inject constructor(
                 emit(Resource.Loading(false))
                 return@flow
             }
-
 
             val movieListFromApi = try {
                 api.getMovies(page)
@@ -66,10 +65,12 @@ class MovieRepositoryImpl @Inject constructor(
 
             movieDatabase.movieDao.upsertMovieList(movieEntities)
 
-            emit(Resource.Success(movieEntities.map { it.toMovie() }))
+            emit(Resource.Success(
+                movieEntities.map { it.toMovie() }
+            ))
             emit(Resource.Loading(false))
 
         }
     }
-
 }
+

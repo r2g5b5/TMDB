@@ -1,4 +1,4 @@
-package com.example.tmdb.presentation.ui.navigation
+package com.example.tmdb.presentation.feature.home.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.tmdb.R
 import com.example.tmdb.presentation.feature.movie.GetMoviesViewModel
 import com.example.tmdb.presentation.feature.movie.compose.MoviesScreen
+import com.example.tmdb.presentation.ui.navigation.Destinations
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +47,7 @@ fun HomeScreen() {
             },
             actions = {
 
-                IconButton(onClick = { /* doSomething() */ }) {
+                IconButton(onClick = {  }) {
                     Icon(painterResource(id = R.drawable.bazaar), contentDescription = null,tint = Color.Unspecified)
 
                 }

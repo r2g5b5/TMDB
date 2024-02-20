@@ -1,6 +1,6 @@
 package com.example.tmdb.presentation.feature.movie
 
 sealed interface MovieListUiEvent {
-     class Paginate() : MovieListUiEvent
-     class Retry() : MovieListUiEvent
+     data object Paginate : MovieListUiEvent
+     data object Retry : MovieListUiEvent
 }
